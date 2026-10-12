@@ -27,8 +27,13 @@ public class ActivityService {
     private String exchange;
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
-    public ActivityResponse trackActivity(ActivityRequest request) {
-        Boolean isValidUser = userValidationService.validateUser(request.getUserId());
+    public ActivityResponse trackActivity(
+            ActivityRequest request,
+            String authorizationHeader) {
+        Boolean isValidUser = userValidationService.validateUser(
+                request.getUserId(),
+                authorizationHeader
+        );
         if(!isValidUser)
             throw new RuntimeException("Invalid user: "+ request.getUserId());
         Activity activity = Activity.builder()

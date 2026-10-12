@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
@@ -19,14 +20,15 @@ public class ActivityController {
     @PostMapping
     public ResponseEntity<ActivityResponse> trackActivity(
             @RequestBody ActivityRequest request,
-            Authentication authentication) {
+            Authentication authentication,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
 
         String authenticatedUserId = authentication.getName();
 
         request.setUserId(authenticatedUserId);
 
         return ResponseEntity.ok(
-                activityService.trackActivity(request)
+                activityService.trackActivity(request, authorizationHeader)
         );
     }
     @GetMapping
