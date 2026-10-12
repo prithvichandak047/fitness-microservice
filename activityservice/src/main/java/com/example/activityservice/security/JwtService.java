@@ -1,0 +1,30 @@
+package com.example.activityservice.security;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+
+@Service
+public class JwtService {
+
+    private final SecretKey signingKey;
+
+    public JwtService(@Value("${jwt.secret}") String jwtSecret) {
+        this.signingKey = Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(jwtSecret)
+        );
+    }
+
+    public String extractSubject(String token) {
+        return Jwts.parser()
+                .verifyWith(signingKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+}
